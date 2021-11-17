@@ -11,10 +11,7 @@ namespace Testlet
             TestletId = testletId ?? throw new ArgumentNullException(nameof(TestletId));
             Items = items ?? throw new ArgumentNullException(nameof(Items));
 
-            if (!IsItemsCountValid())
-            {
-                throw new ArgumentException(nameof(Items));
-            }
+            ItemsCountValidate();
         }
 
         public string TestletId { get; set; }
@@ -27,20 +24,18 @@ namespace Testlet
             return result;
         }
 
-        private bool IsItemsCountValid()
+        private void ItemsCountValidate()
         {
             var pretestItemsCount = Items.Count(item => item.ItemType == ItemTypeEnum.Pretest);
             var operationalItemsCount = Items.Count(item => item.ItemType == ItemTypeEnum.Operational);
             if (operationalItemsCount != TestletItemsCount.Operational
                 || pretestItemsCount != TestletItemsCount.Pretest)
             {
-                return false;
+                throw new ArgumentException($"Invalid number of elements. Expected {TestletItemsCount.Pretest} pretest and {TestletItemsCount.Operational} operational elements.");
             }
-
-            return true;
         }
 
-        private List<Item> CreateShuffledItemsListCopy(List<Item> items)
+        private List<Item> CreateShuffledItemsListCopy(IEnumerable<Item> items)
         {
             var itemsListCopy = new List<Item>(items);
             Shuffle(itemsListCopy);

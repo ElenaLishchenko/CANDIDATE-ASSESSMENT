@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Testlet.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class TestletTests
     {
         private List<Item> ItemsSet { get; set; }
@@ -16,7 +16,7 @@ namespace Testlet.Tests
             ItemsSet = GetItemsSet();
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void Expect_Same_Elements_Count_As_Items_Set()
         {
             // Arrange
@@ -29,7 +29,7 @@ namespace Testlet.Tests
             Assert.AreEqual(ItemsSet.Count, actual.Count);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void Expect_Elements_From_The_Items_Set()
         {
             // Arrange
@@ -42,8 +42,8 @@ namespace Testlet.Tests
             actual.ForEach(item => Assert.IsTrue(ItemsSet.Contains(item)));
         }
         
-        [TestMethod()]
-        public void Expect_Pretest_Items_As_The_First_Two_Elements()
+        [TestMethod]
+        public void Expect_Pretest_Items_As_The_First_Elements()
         {
             // Arrange
             var testlet = new Testlet("test", ItemsSet);
@@ -52,12 +52,14 @@ namespace Testlet.Tests
             var actual = testlet.Randomize();
 
             // Assert
-            Assert.AreEqual(ItemTypeEnum.Pretest, actual[0].ItemType);
-            Assert.AreEqual(ItemTypeEnum.Pretest, actual[1].ItemType);
+            for (int i = 0; i < TestletItemsCount.FirstPretestItems; i++)
+            {
+                Assert.AreEqual(ItemTypeEnum.Pretest, actual[i].ItemType);
+            }
         }
 
-        [TestMethod()]
-        public void Expect_Last_Eight_Items_As_The_Remaining_Elements()
+        [TestMethod]
+        public void Expect_Correct_Number_Of_Pretest_And_Operational_Items_As_The_Remaining_Elements()
         {
             // Arrange
             var testlet = new Testlet("test", ItemsSet);
@@ -65,27 +67,28 @@ namespace Testlet.Tests
             // Act
             var randomizedItems = testlet.Randomize();
             var remainingRandomizedItemsByType = randomizedItems.Skip(2).ToLookup(i => i.ItemType);
+            var expectedRemainingPretestElementsCount = TestletItemsCount.Pretest - TestletItemsCount.FirstPretestItems;
 
             // Assert
-            Assert.AreEqual(2, remainingRandomizedItemsByType[ItemTypeEnum.Pretest].Count());
-            Assert.AreEqual(6, remainingRandomizedItemsByType[ItemTypeEnum.Operational].Count());
+            Assert.AreEqual(expectedRemainingPretestElementsCount, remainingRandomizedItemsByType[ItemTypeEnum.Pretest].Count());
+            Assert.AreEqual(TestletItemsCount.Operational, remainingRandomizedItemsByType[ItemTypeEnum.Operational].Count());
         }
 
-        [TestMethod()]
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException), nameof(Testlet.TestletId))]
         public void Expect_Argument_Null_Exception_Thrown_For_Null_TestletId()
         {
             var testlet = new Testlet(null, ItemsSet);
         }
 
-        [TestMethod()]
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException), nameof(Testlet.Items))]
         public void Expect_Argument_Null_Exception_Thrown_For_Null_TestItems()
         {
             var testlet = new Testlet("test", null);
         }
 
-        [TestMethod()]
+        [TestMethod]
         [ExpectedException(typeof(ArgumentException), nameof(Testlet.Items))]
         public void Expect_Argument_Exception_Thrown_For_Surplus_TestItems_Count()
         {
@@ -97,7 +100,7 @@ namespace Testlet.Tests
             var testlet = new Testlet("test", ItemsSet);
         }
 
-        [TestMethod()]
+        [TestMethod]
         [ExpectedException(typeof(ArgumentException), nameof(Testlet.Items))]
         public void Expect_Argument_Exception_Thrown_For_Insufficient_TestItems_Count()
         {
@@ -105,7 +108,7 @@ namespace Testlet.Tests
             var testlet = new Testlet("test", ItemsSet);
         }
 
-        [TestMethod()]
+        [TestMethod]
         [ExpectedException(typeof(ArgumentException), nameof(Testlet.Items))]
         public void Expect_Argument_Exception_Thrown_For_Wrong_TestItems_Type_Count()
         {
