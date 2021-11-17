@@ -66,7 +66,7 @@ namespace Testlet.Tests
 
             // Act
             var randomizedItems = testlet.Randomize();
-            var remainingRandomizedItemsByType = randomizedItems.Skip(2).ToLookup(i => i.ItemType);
+            var remainingRandomizedItemsByType = randomizedItems.Skip(TestletItemsCount.FirstPretestItems).ToLookup(i => i.ItemType);
             var expectedRemainingPretestElementsCount = TestletItemsCount.Pretest - TestletItemsCount.FirstPretestItems;
 
             // Assert
